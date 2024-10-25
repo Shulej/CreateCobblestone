@@ -1,6 +1,5 @@
 package net.createcobblestone.data;
 
-import net.createcobblestone.CreateCobblestoneMod;
 import net.createcobblestone.index.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +10,8 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+
+import static net.createcobblestone.CreateCobblestoneMod.LOGGER;
 
 public class GeneratorType {
     private static final Map<String, GeneratorType> ID_TO_TYPE = new HashMap<>();
@@ -29,27 +30,40 @@ public class GeneratorType {
         ID_TO_TYPE.clear();
         BLOCK_TO_TYPE.clear();
 
-        CreateCobblestoneMod.LOGGER.info("Generator types cleared");
+        LOGGER.info("Generator types cleared");
 
-        NONE = new GeneratorType("none", Blocks.AIR.arch$registryName(), -1, -1, -1);
-
-        CreateCobblestoneMod.LOGGER.info("Generator type NONE initialized");
+        NONE = initializeNewType("none", Blocks.AIR.arch$registryName(), -1, -1, -1);
     }
 
-    public GeneratorType(String id, ResourceLocation block, int generatorStress, float generatorRatio, int generatorStorage) {
+    public static GeneratorType initializeNewType(String id, ResourceLocation block, int generatorStress, float generatorRatio, int generatorStorage){
+
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("Generator type ID cannot be null or empty");
         }
 
+        id = id.toLowerCase();
+
+        if (BLOCK_TO_TYPE.get(block) != null) {
+            LOGGER.error("Error initializing generator, generator type with block {} already exists (existing id: {}, new id: {})", block, BLOCK_TO_TYPE.get(block).getId(), id);
+            return BLOCK_TO_TYPE.get(block);
+        }
+
+        GeneratorType type = new GeneratorType(id, block, generatorStress, generatorRatio, generatorStorage);
+        ID_TO_TYPE.put(id.toLowerCase(), type);
+        BLOCK_TO_TYPE.put(block, type);
+
+        LOGGER.info("Generator type {} initialized with block {}", id, block);
+
+        return type;
+    }
+
+    private GeneratorType(String id, ResourceLocation block, int generatorStress, float generatorRatio, int generatorStorage) {
         this.id = id;
         this.block = block;
 
         this.generatorStress = generatorStress;
         this.generatorRatio = generatorRatio;
         this.generatorStorage = generatorStorage;
-
-        ID_TO_TYPE.put(id.toLowerCase(), this);
-        BLOCK_TO_TYPE.put(block, this);
     }
 
 
@@ -88,6 +102,10 @@ public class GeneratorType {
         return getBlock().asItem();
     }
 
+    public boolean isLoaded() {
+        return ID_TO_TYPE.get(id) != null;
+    }
+
     public static @NotNull GeneratorType fromId(String id) {
 
         GeneratorType type = ensureType(ID_TO_TYPE.get(id.toLowerCase()));
@@ -121,7 +139,7 @@ public class GeneratorType {
             type = ensureType(ID_TO_TYPE.get(id));
 
             if (type == GeneratorType.NONE && id.equals("createcobblestone:generator_types/deepslate.json") || id.equals("createcobblestone:generator_types/cobbled_deepslate.json")) {
-                CreateCobblestoneMod.LOGGER.error("Deepslate generators are now added using a data pack. Please install it from the mod page. (generator: {})", id);
+                LOGGER.error("Deepslate generators are now added using a data pack. Please install it from the mod page. (generator: {})", id);
             }
         }
 

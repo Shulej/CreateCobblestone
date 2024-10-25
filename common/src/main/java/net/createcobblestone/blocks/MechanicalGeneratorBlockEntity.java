@@ -118,7 +118,7 @@ public class MechanicalGeneratorBlockEntity extends KineticBlockEntity implement
         Block generatorBlock;
 
         try {
-            generatorBlock  = type.getBlock();
+            generatorBlock = type.getBlock();
 
             if (!Config.common().isEnabled(type)) {
                 updateType(GeneratorType.NONE);
@@ -131,6 +131,12 @@ public class MechanicalGeneratorBlockEntity extends KineticBlockEntity implement
         }
 
         if (generatorBlock != Blocks.AIR) {
+
+            if (!type.isLoaded()){
+                updateType(GeneratorType.NONE);
+                return;
+            }
+
             if (this.available < type.getStorage()) {
                 this.available = this.available + abs(getSpeed() / type.getGeneratorRatio());
             }

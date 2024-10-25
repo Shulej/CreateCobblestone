@@ -14,7 +14,10 @@ import java.util.Map;
 
 public class GeneratorTypeLoader {
 
+    public static boolean loaded = false;
+
     public static void loadGeneratorTypes(ResourceManager resourceManager) {
+        loaded = false;
         GeneratorType.init();
 
         Map<ResourceLocation, Resource> resources = resourceManager.listResources("generator_types", location -> location.getPath().endsWith(".json"));
@@ -33,6 +36,11 @@ public class GeneratorTypeLoader {
                 float generatorRatio = -1;
                 int generatorStorage = -1;
 
+                if (generatorJsonData.has("enabled") && !generatorJsonData.get("enabled").getAsBoolean()) {
+                    // Enabled at default, but disabled when actively disabled. Completely removes the generator type, also from creative tab.
+                    continue;
+                }
+
                 if (generatorJsonData.has("stress")) {
                     generatorStress = generatorJsonData.get("stress").getAsInt();
                 }
@@ -45,12 +53,14 @@ public class GeneratorTypeLoader {
                     generatorStorage = generatorJsonData.get("storage").getAsInt();
                 }
 
-                new GeneratorType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
+                GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
+
             } catch (IOException e) {
                 CreateCobblestoneMod.LOGGER.error("Error loading generator type: " + id, e);
             }
         }
 
+        loaded = true;
         CreateCobblestoneMod.LOGGER.info("Generator types loading done");
     }
 
