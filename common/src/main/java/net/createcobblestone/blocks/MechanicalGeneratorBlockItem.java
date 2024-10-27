@@ -1,5 +1,6 @@
 package net.createcobblestone.blocks;
 
+import net.createcobblestone.CreateCobblestoneMod;
 import net.createcobblestone.data.GeneratorType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -55,10 +57,15 @@ public class MechanicalGeneratorBlockItem extends BlockItem {
     }
 
     @Override
-    public ItemStack getDefaultInstance() {
+    public @NotNull ItemStack getDefaultInstance() {
         ItemStack defaultStack = super.getDefaultInstance();
-
-        defaultStack.getOrCreateTagElement("BlockEntityTag").putString("type", GeneratorType.NONE.getId());
+        try {
+            defaultStack.getOrCreateTagElement("BlockEntityTag").putString("type", GeneratorType.NONE.getId());
+        } catch (NullPointerException e) {
+            CreateCobblestoneMod.LOGGER.error("Tried accessing generator NONE as item before initialized (world load), error below:");
+            CreateCobblestoneMod.LOGGER.error(e.getMessage(), e);
+            defaultStack.getOrCreateTagElement("BlockEntityTag").putString("type", "none");
+        }
 
         return defaultStack;
     }
