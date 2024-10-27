@@ -23,7 +23,10 @@ public class GeneratorType {
     private final float generatorRatio;
     private final int generatorStorage;
 
-    public static GeneratorType NONE;
+    // Fix being incompatible with mods that for some reason need this before the world is loaded
+    // List of mods that need this:
+    // - Create Liquid Fuel
+    public static GeneratorType NONE = initializeNewType("none", Blocks.AIR.arch$registryName(), -1, -1, -1);
 
     public static void init() {
         // clears all generator types and (re)adds the empty type
