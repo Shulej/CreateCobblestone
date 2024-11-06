@@ -3,10 +3,7 @@ package net.createcobblestone;
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import net.createcobblestone.data.GeneratorTypeLoader;
-import net.createcobblestone.index.BlockEntities;
-import net.createcobblestone.index.Blocks;
-import net.createcobblestone.index.Config;
-import net.createcobblestone.index.CreativeTabs;
+import net.createcobblestone.index.*;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,7 @@ public class CreateCobblestoneMod {
     public static void init() {
         LOGGER.info("{} initializing! Create version: {} on platform: {}", NAME, Create.VERSION, CreateCobblestoneExpectPlatform.platformName());
 
+        Network.init();
         Config.register();
 
         Blocks.init(); // hold registrate in a separate class to avoid loading early on forge
