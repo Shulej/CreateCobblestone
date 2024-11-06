@@ -1,9 +1,15 @@
 package net.createcobblestone.data;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.createcobblestone.index.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -94,7 +100,7 @@ public class GeneratorType {
 
     public Block getBlock() throws NullPointerException
     {
-        return Objects.requireNonNull(Minecraft.getInstance().level).registryAccess().registryOrThrow(Registries.BLOCK).get(block);
+        return BuiltInRegistries.BLOCK.get(block);
     }
 
     public Item getItem() throws NullPointerException
