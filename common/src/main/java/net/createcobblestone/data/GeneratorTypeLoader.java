@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.jozufozu.flywheel.util.Pair;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import io.netty.buffer.Unpooled;
 import net.createcobblestone.CreateCobblestoneMod;
@@ -70,6 +71,10 @@ public class GeneratorTypeLoader {
                 }
 
                 loadedTypes.add(new Quintet<>(id.toString(), block, generatorStress, generatorRatio, generatorStorage));
+
+                if (Platform.getEnvironment() == Env.SERVER) {
+                    GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
+                }
 
             } catch (IOException e) {
                 LOGGER.error("Error loading generator type: " + id, e);
