@@ -37,6 +37,8 @@ public class GeneratorTypeLoader {
         loaded = false;
         GeneratorType.init();
 
+        loadedTypes.clear();
+
         Map<ResourceLocation, Resource> resources = resourceManager.listResources("generator_types", location -> location.getPath().endsWith(".json"));
 
         for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
