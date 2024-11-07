@@ -74,9 +74,7 @@ public class GeneratorTypeLoader {
 
                 loadedTypes.add(new Quintet<>(id.toString(), block, generatorStress, generatorRatio, generatorStorage));
 
-                if (Platform.getEnvironment() == Env.SERVER) {
-                    GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
-                }
+                GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
 
             } catch (IOException e) {
                 LOGGER.error("Error loading generator type: " + id, e);
@@ -106,12 +104,12 @@ public class GeneratorTypeLoader {
     }
 
     public static void loadGeneratorTypesFromPacket(FriendlyByteBuf buf, NetworkManager.PacketContext context) {
+        LOGGER.info("Received generator update packet");
         loaded = false;
 
         GeneratorType.init();
 
         int generatorAmount = buf.readInt();
-
 
         for (int i = 0; i < generatorAmount; i++) {
             String id = buf.readUtf();
