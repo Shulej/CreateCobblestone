@@ -29,12 +29,8 @@ public class ResourceReloadListener implements PreparableReloadListener {
             return barrier.wait(backgroundResult).thenRun(() -> {
                 reloadProfiler.push("apply");
                 // Load generator types here
-                try {
-                    GeneratorTypeLoader.loadGeneratorTypes(resourceManager);
-                    LOGGER.info("Generator types loaded successfully.");
-                } catch (Exception e) {
-                    LOGGER.error("Failed to load generator types.", e);
-                }
+                GeneratorTypeLoader.loadGeneratorTypes(resourceManager);
+                LOGGER.info("Generator types loaded successfully.");
                 reloadProfiler.pop();
             });
         });

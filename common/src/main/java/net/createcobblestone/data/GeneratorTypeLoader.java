@@ -2,25 +2,19 @@ package net.createcobblestone.data;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.jozufozu.flywheel.util.Pair;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import io.netty.buffer.Unpooled;
-import net.createcobblestone.CreateCobblestoneMod;
 import net.createcobblestone.index.Network;
-import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.block.Blocks;
 import oshi.util.tuples.Quintet;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +45,10 @@ public class GeneratorTypeLoader {
 
                 String block = generatorJsonData.get("block").getAsString();
 
+                if (BuiltInRegistries.BLOCK.get(new ResourceLocation(block)) == Blocks.AIR){
+                    LOGGER.error("Generator type {} has no block assigned", id);
+                }
+
                 int generatorStress = -1;
                 float generatorRatio = -1;
                 int generatorStorage = -1;
@@ -72,11 +70,10 @@ public class GeneratorTypeLoader {
                     generatorStorage = generatorJsonData.get("storage").getAsInt();
                 }
 
+                GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
                 loadedTypes.add(new Quintet<>(id.toString(), block, generatorStress, generatorRatio, generatorStorage));
 
-                GeneratorType.initializeNewType(id.toString(), new ResourceLocation(block), generatorStress, generatorRatio, generatorStorage);
-
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.error("Error loading generator type: " + id, e);
             }
         }
